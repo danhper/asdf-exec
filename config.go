@@ -26,7 +26,7 @@ func ParseBool(boolStr string) (bool, error) {
 	}
 }
 
-// Returns a config from a string
+// ConfigFromString returns a config from a string
 func ConfigFromString(content string) (config Config, err error) {
 	for _, line := range ReadLines(content) {
 		tokens := strings.Split(line, "=")
@@ -46,7 +46,7 @@ func ConfigFromString(content string) (config Config, err error) {
 	return
 }
 
-// Returns a config from the given configuration file
+// ConfigFromFile returns a config from the given configuration file
 func ConfigFromFile(filepath string) (Config, error) {
 	content, err := ioutil.ReadFile(filepath)
 	if err != nil {
@@ -55,7 +55,7 @@ func ConfigFromFile(filepath string) (Config, error) {
 	return ConfigFromString(string(content))
 }
 
-// Returns a config from the default configuration file
+// ConfigFromDefaultFile returns a config from the default configuration file
 func ConfigFromDefaultFile() (Config, error) {
 	filepath := path.Join(os.Getenv("HOME"), ".asdfrc")
 	return ConfigFromFile(filepath)

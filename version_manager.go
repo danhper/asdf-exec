@@ -21,7 +21,7 @@ func ParseVersion(rawVersions string) []string {
 	return versions
 }
 
-// FindVersionsFromEnv returns the version from the environment if present
+// FindVersionsInEnv returns the version from the environment if present
 func FindVersionsInEnv(plugin string) ([]string, bool) {
 	envVariableName := "ASDF_" + strings.ToUpper(plugin) + "_VERSION"
 	versionString := os.Getenv(envVariableName)
@@ -31,7 +31,7 @@ func FindVersionsInEnv(plugin string) ([]string, bool) {
 	return ParseVersion(versionString), true
 }
 
-// FindVersionsFromDir returns the version from the current directory
+// FindVersionsInDir returns the version from the current directory
 func FindVersionsInDir(dir string, plugin string, config Config) ([]string, bool, error) {
 	filepath := path.Join(dir, toolVersionsFile)
 	if _, err := os.Stat(filepath); err != nil {

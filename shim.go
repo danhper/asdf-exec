@@ -65,7 +65,7 @@ func GetExecutablesFromShimFile(filepath string) ([]Executable, error) {
 	return GetExecutablesFromShim(name, string(content))
 }
 
-// FindExecutablePath returns the path to the executable to be executed
+// FindExecutable returns the path to the executable to be executed
 func FindExecutable(filepath string, config Config) (Executable, bool, error) {
 	executables, err := GetExecutablesFromShimFile(filepath)
 	if err != nil {
