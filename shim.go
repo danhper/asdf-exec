@@ -28,7 +28,7 @@ func GetAsdfDataPath() string {
 
 // ParseExecutableLine returns an executable from a shim plugin line
 func ParseExecutableLine(name string, fullLine string) (Executable, error) {
-	line := strings.ReplaceAll(fullLine, asdfPluginPrefix, "")
+	line := strings.Replace(fullLine, asdfPluginPrefix, "", -1)
 	tokens := strings.Split(line, " ")
 	if len(tokens) != 2 {
 		return Executable{}, fmt.Errorf("bad line %s", fullLine)
