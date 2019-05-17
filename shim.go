@@ -4,26 +4,21 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path"
 	"strings"
 )
 
-const asdfPluginPrefix string = "# asdf-plugin: "
+const (
+	asdfPluginPrefix  string = "# asdf-plugin: "
+	listBinPathScript string = "list-bin-paths"
+)
 
 // Executable is an instance of a single executable
 type Executable struct {
 	Name          string
 	PluginName    string
 	PluginVersion string
-}
-
-// GetAsdfDataPath returns the path for asdf
-func GetAsdfDataPath() string {
-	dir := os.Getenv("ASDF_DATA_DIR")
-	if dir != "" {
-		return dir
-	}
-	return path.Join(os.Getenv("HOME"), ".asdf")
 }
 
 // ParseExecutableLine returns an executable from a shim plugin line
@@ -109,13 +104,35 @@ func GetShimPath(shimName string) string {
 }
 
 // GetExecutablePath returns the path of the executable
-func GetExecutablePath(executable Executable) string {
-	return path.Join(
+func GetExecutablePath(executable Executable) (string, error) {
+	pluginPath := GetPluginPath(executable.PluginName)
+	installPath := path.Join(
 		GetAsdfDataPath(),
 		"installs",
 		executable.PluginName,
 		executable.PluginVersion,
-		"bin",
-		executable.Name,
 	)
+
+	listBinPath := path.Join(pluginPath, "bin", listBinPathScript)
+	if _, err := os.Stat(listBinPath); err != nil {
+		exePath := path.Join(installPath, "bin", executable.Name)
+		if _, err := os.Stat(exePath); err != nil {
+			return "", fmt.Errorf("executable not found")
+		}
+		return exePath, nil
+	}
+
+	rawBinPaths, err := exec.Command("bash", listBinPath).Output()
+	if err != nil {
+		return "", err
+	}
+	paths := strings.Split(string(rawBinPaths), " ")
+	for _, binPath := range paths {
+		binPath = strings.TrimSpace(binPath)
+		exePath := path.Join(installPath, binPath, executable.Name)
+		if _, err := os.Stat(exePath); err == nil {
+			return exePath, nil
+		}
+	}
+	return "", fmt.Errorf("executable not found")
 }

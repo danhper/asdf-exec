@@ -48,7 +48,7 @@ func TestFindVersionsInToolFileContent(t *testing.T) {
 func TestFindVersions(t *testing.T) {
 	cwd, err := os.Getwd()
 	assert.Nil(t, err)
-	config := Config{LegacyVersionFile: false}
+	config := Config{LegacyVersionFile: true}
 
 	os.Setenv("HOME", "/tmp")
 	assert.Nil(t, os.Chdir("/tmp"))
@@ -68,6 +68,22 @@ func TestFindVersions(t *testing.T) {
 	assert.Nil(t, err)
 	assert.True(t, found)
 	assert.Equal(t, []string{"3.6.7", "2.7.11"}, versions)
+
+	delete(legacyFileNamesCache, "python")
+	os.Setenv("ASDF_DATA_DIR", path.Join(cwd, "fixtures", "asdf"))
+	assert.Nil(t, os.Chdir(path.Join(cwd, "fixtures", "some-dir", "with-legacy-version")))
+	versions, found, err = FindVersions("python", config)
+	assert.Nil(t, err)
+	assert.True(t, found)
+	assert.Equal(t, []string{"2.7.11"}, versions)
+
+	assert.Nil(t, os.Chdir(path.Join(cwd, "fixtures", "some-dir", "with-legacy-version")))
+	versions, found, err = FindVersions("ruby", config)
+	assert.Nil(t, err)
+	assert.True(t, found)
+	assert.Equal(t, []string{"2.0.0"}, versions)
+
+	os.Unsetenv("ASDF_DATA_DIR")
 
 	assert.Nil(t, os.Chdir(cwd))
 }

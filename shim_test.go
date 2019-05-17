@@ -31,7 +31,7 @@ func TestFindExecutable(t *testing.T) {
 	config := Config{LegacyVersionFile: false}
 	cwd, err := os.Getwd()
 	assert.Nil(t, err)
-	shimPath := path.Join(cwd, "fixtures", "shims", "flask")
+	shimPath := path.Join(cwd, "fixtures", "asdf", "shims", "flask")
 
 	os.Setenv("HOME", "/tmp")
 	assert.Nil(t, os.Chdir("/tmp"))
@@ -51,8 +51,22 @@ func TestFindExecutable(t *testing.T) {
 }
 
 func TestGetExecutablePath(t *testing.T) {
+	cwd, err := os.Getwd()
+	assert.Nil(t, err)
+	os.Setenv("ASDF_DATA_DIR", path.Join(cwd, "fixtures", "asdf"))
+
 	executable := Executable{Name: "2to3", PluginName: "python", PluginVersion: "2.7.11"}
-	executablePath := GetExecutablePath(executable)
-	expected := path.Join(os.Getenv("HOME"), ".asdf", "installs", "python", "2.7.11", "bin", "2to3")
+	executablePath, err := GetExecutablePath(executable)
+	assert.Nil(t, err)
+	expected := path.Join(os.Getenv("ASDF_DATA_DIR"), "installs", "python", "2.7.11", "bin", "2to3")
 	assert.Equal(t, expected, executablePath)
+
+	// check it works with list-bin-paths
+	executable = Executable{Name: "go", PluginName: "go", PluginVersion: "1.9.1"}
+	executablePath, err = GetExecutablePath(executable)
+	assert.Nil(t, err)
+	expected = path.Join(os.Getenv("ASDF_DATA_DIR"), "installs", "go", "1.9.1", "go", "bin", "go")
+	assert.Equal(t, expected, executablePath)
+
+	os.Unsetenv("ASDF_DATA_DIR")
 }

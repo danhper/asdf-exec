@@ -21,7 +21,7 @@ func findExecutablePath() (string, error) {
 	if !found {
 		return "", fmt.Errorf("%s not found", shim)
 	}
-	return GetExecutablePath(executable), nil
+	return GetExecutablePath(executable)
 }
 
 func main() {
@@ -33,5 +33,5 @@ func main() {
 
 	args := []string{executable}
 	args = append(args, os.Args[2:]...)
-	syscall.Exec(executable, args, []string{})
+	syscall.Exec(executable, args, os.Environ())
 }
