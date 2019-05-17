@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# asdf-plugin: python 3.5.2
+# asdf-plugin: python 2.7.11
+# asdf-plugin: python 3.6.7
+exec /home/daniel/.asdf/bin/asdf exec "flask" "$@"
