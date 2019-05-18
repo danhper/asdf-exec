@@ -1,5 +1,7 @@
 # asdf-exec
 
+[![CircleCI](https://circleci.com/gh/danhper/asdf-exec.svg?style=svg)](https://circleci.com/gh/danhper/asdf-exec)
+
 Experimental command to find and run executable used by [asdf][asdf] shims.
 
 NOTE: This is not officially supported by asdf and requires to slightly
