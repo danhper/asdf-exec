@@ -21,6 +21,11 @@ wget https://github.com/danhper/asdf-exec/releases/download/v0.1/asdf-exec-linux
 wget https://github.com/danhper/asdf-exec/releases/download/v0.1/asdf-exec-darwin-x64 -O ~/.asdf/bin/private/asdf-exec
 ```
 
+Then, create an `.asdfrc` file if you don't have one already:
+```
+touch ~/.asdfrc
+```
+
 Then, patch asdf reshim command code and regenerate all shims.
 
 ```
