@@ -19,6 +19,9 @@ and put it in `~/.asdf/bin/private` as `asdf-exec`
 wget https://github.com/danhper/asdf-exec/releases/download/v0.1/asdf-exec-linux-x64 -O ~/.asdf/bin/private/asdf-exec
 # for macos
 wget https://github.com/danhper/asdf-exec/releases/download/v0.1/asdf-exec-darwin-x64 -O ~/.asdf/bin/private/asdf-exec
+
+# for both:
+chmod +x ~/.asdf/bin/private/asdf-exec
 ```
 
 Then, patch asdf reshim command code and regenerate all shims.
