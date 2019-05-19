@@ -48,9 +48,13 @@ func ConfigFromString(content string) (config Config, err error) {
 
 // ConfigFromFile returns a config from the given configuration file
 func ConfigFromFile(filepath string) (Config, error) {
+	defaultConfig := Config{LegacyVersionFile: false}
+	if _, err := os.Stat(filepath); err != nil {
+		return defaultConfig, nil
+	}
 	content, err := ioutil.ReadFile(filepath)
 	if err != nil {
-		return Config{LegacyVersionFile: false}, err
+		return defaultConfig, err
 	}
 	return ConfigFromString(string(content))
 }
