@@ -16,9 +16,9 @@ and put it in `~/.asdf/bin/private` as `asdf-exec`
 
 ```
 # for linux
-wget https://github.com/danhper/asdf-exec/releases/download/v0.1.1/asdf-exec-linux-x64 -O ~/.asdf/bin/private/asdf-exec
+wget https://github.com/danhper/asdf-exec/releases/download/v0.1.2/asdf-exec-linux-x64 -O ~/.asdf/bin/private/asdf-exec
 # for macos
-wget https://github.com/danhper/asdf-exec/releases/download/v0.1.1/asdf-exec-darwin-x64 -O ~/.asdf/bin/private/asdf-exec
+wget https://github.com/danhper/asdf-exec/releases/download/v0.1.2/asdf-exec-darwin-x64 -O ~/.asdf/bin/private/asdf-exec
 
 # for both:
 chmod +x ~/.asdf/bin/private/asdf-exec
