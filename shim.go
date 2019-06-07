@@ -60,11 +60,22 @@ func GetExecutablesFromShimFile(filepath string) ([]Executable, error) {
 	return GetExecutablesFromShim(name, string(content))
 }
 
+// FindSystemExecutable returns the path to the system
+// executable if found
+func FindSystemExecutable(executableName string) (string, bool) {
+	currentPath := os.Getenv("PATH")
+	defer os.Setenv("PATH", currentPath)
+	os.Setenv("PATH", RemoveAsdfPath(currentPath))
+	executablePath, err := exec.LookPath(executableName)
+	return executablePath, err == nil
+}
+
 // FindExecutable returns the path to the executable to be executed
-func FindExecutable(filepath string, config Config) (Executable, bool, error) {
-	executables, err := GetExecutablesFromShimFile(filepath)
+func FindExecutable(executableName string, config Config) (string, bool, error) {
+	shimPath := GetShimPath(executableName)
+	executables, err := GetExecutablesFromShimFile(shimPath)
 	if err != nil {
-		return Executable{}, false, err
+		return "", false, err
 	}
 
 	plugins := make(map[string][]Executable)
@@ -81,21 +92,29 @@ func FindExecutable(filepath string, config Config) (Executable, bool, error) {
 	for plugin, pluginExecutables := range plugins {
 		toolVersions, found, err := FindVersions(plugin, config)
 		if err != nil {
-			return Executable{}, false, err
+			return "", false, err
 		}
 		if !found {
 			continue
 		}
+
 		for _, toolVersion := range toolVersions {
+			if toolVersion == "system" {
+				if executablePath, found := FindSystemExecutable(executableName); found {
+					return executablePath, true, nil
+				}
+			}
 			for _, executable := range pluginExecutables {
 				if toolVersion == executable.PluginVersion {
-					return executable, true, nil
+					if executablePath, err := GetExecutablePath(executable); err == nil {
+						return executablePath, true, nil
+					}
 				}
 			}
 		}
 	}
 
-	return Executable{}, false, nil
+	return "", false, nil
 }
 
 // GetShimPath returns the path of the shim

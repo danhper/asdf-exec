@@ -13,15 +13,14 @@ func findExecutablePath() (string, error) {
 	}
 
 	shim := os.Args[1]
-	shimPath := GetShimPath(shim)
-	executable, found, err := FindExecutable(shimPath, config)
+	executablePath, found, err := FindExecutable(shim, config)
 	if err != nil {
 		return "", err
 	}
 	if !found {
 		return "", fmt.Errorf("%s not found", shim)
 	}
-	return GetExecutablePath(executable)
+	return executablePath, nil
 }
 
 func main() {

@@ -48,6 +48,10 @@ func TestFindVersionsInToolFileContent(t *testing.T) {
 func TestFindVersions(t *testing.T) {
 	cwd, err := os.Getwd()
 	assert.Nil(t, err)
+
+	defer os.Chdir(cwd)
+	defer os.Unsetenv("ASDF_DATA_DIR")
+
 	config := Config{LegacyVersionFile: true}
 
 	os.Setenv("HOME", "/tmp")
@@ -82,8 +86,4 @@ func TestFindVersions(t *testing.T) {
 	assert.Nil(t, err)
 	assert.True(t, found)
 	assert.Equal(t, []string{"2.0.0"}, versions)
-
-	os.Unsetenv("ASDF_DATA_DIR")
-
-	assert.Nil(t, os.Chdir(cwd))
 }

@@ -31,29 +31,33 @@ func TestFindExecutable(t *testing.T) {
 	config := Config{LegacyVersionFile: false}
 	cwd, err := os.Getwd()
 	assert.Nil(t, err)
-	shimPath := path.Join(cwd, "fixtures", "asdf", "shims", "flask")
-
+	currentHome := os.Getenv("HOME")
 	os.Setenv("HOME", "/tmp")
+	os.Setenv("ASDF_DATA_DIR", path.Join(cwd, "fixtures", "asdf"))
+
+	defer os.Setenv("HOME", currentHome)
+	defer os.Chdir(cwd)
+	defer os.Unsetenv("ASDF_DATA_DIR")
+
 	assert.Nil(t, os.Chdir("/tmp"))
 
-	_, found, err := FindExecutable(shimPath, config)
+	_, found, err := FindExecutable("flask", config)
 	assert.Nil(t, err)
 	assert.False(t, found)
 
 	assert.Nil(t, os.Chdir(path.Join(cwd, "fixtures", "some-dir", "nested-dir")))
-	executable, found, err := FindExecutable(shimPath, config)
+	executablePath, found, err := FindExecutable("flask", config)
 	assert.Nil(t, err)
 	assert.True(t, found)
-	assert.Equal(t, "python", executable.PluginName)
-	assert.Equal(t, "3.6.7", executable.PluginVersion)
-
-	assert.Nil(t, os.Chdir(cwd))
+	expectedPath := path.Join(GetAsdfDataPath(), "installs", "python", "3.6.7", "bin", "flask")
+	assert.Equal(t, expectedPath, executablePath)
 }
 
 func TestGetExecutablePath(t *testing.T) {
 	cwd, err := os.Getwd()
 	assert.Nil(t, err)
 	os.Setenv("ASDF_DATA_DIR", path.Join(cwd, "fixtures", "asdf"))
+	defer os.Unsetenv("ASDF_DATA_DIR")
 
 	executable := Executable{Name: "2to3", PluginName: "python", PluginVersion: "2.7.11"}
 	executablePath, err := GetExecutablePath(executable)
@@ -67,6 +71,4 @@ func TestGetExecutablePath(t *testing.T) {
 	assert.Nil(t, err)
 	expected = path.Join(os.Getenv("ASDF_DATA_DIR"), "installs", "go", "1.9.1", "go", "bin", "go")
 	assert.Equal(t, expected, executablePath)
-
-	os.Unsetenv("ASDF_DATA_DIR")
 }

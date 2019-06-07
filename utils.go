@@ -1,6 +1,9 @@
 package main
 
-import "strings"
+import (
+	"path"
+	"strings"
+)
 
 // ReadLines reads all the lines in a given file
 // removing spaces and comments which are marked by '#'
@@ -13,4 +16,17 @@ func ReadLines(content string) (lines []string) {
 		}
 	}
 	return
+}
+
+// RemoveAsdfPath returns the PATH without asdf shims path
+func RemoveAsdfPath(currentPath string) string {
+	paths := strings.Split(currentPath, ":")
+	asdfShimPath := path.Join(GetAsdfDataPath(), "shims")
+	var newPaths []string
+	for _, fspath := range paths {
+		if fspath != asdfShimPath {
+			newPaths = append(newPaths, fspath)
+		}
+	}
+	return strings.Join(newPaths, ":")
 }
