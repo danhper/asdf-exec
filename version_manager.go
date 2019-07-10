@@ -90,6 +90,9 @@ func FindVersionsInLegacyFile(dir string, plugin string) (versions []string, fou
 		filepath := path.Join(dir, filename)
 		if _, err := os.Stat(filepath); err == nil {
 			versions, err := GetVersionsFromLegacyfile(plugin, filepath)
+			if len(versions) == 0 || (len(versions) == 1 && versions[0] == "") {
+				return nil, false, nil
+			}
 			return versions, err == nil, err
 		}
 	}
