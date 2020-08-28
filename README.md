@@ -27,7 +27,7 @@ chmod +x ~/.asdf/bin/private/asdf-exec
 Then, patch asdf reshim command code and regenerate all shims.
 
 ```
-sed -i.bak -e 's|exec $(asdf_dir)/bin/asdf exec|exec $(asdf_dir)/bin/private/asdf-exec|' ~/.asdf/lib/commands/reshim.sh
+sed -i.bak -e 's|exec $(asdf_dir)/bin/asdf exec|exec $(asdf_dir)/bin/private/asdf-exec|' ~/.asdf/lib/commands/command-reshim.bash
 rm ~/.asdf/shims/*
 asdf reshim
 ```
