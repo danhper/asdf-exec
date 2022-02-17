@@ -78,6 +78,7 @@ func FindExecutable(executableName string, config Config) (string, bool, error) 
 		return "", false, err
 	}
 
+	var pluginNames []string
 	plugins := make(map[string][]Executable)
 
 	for _, executable := range executables {
@@ -87,24 +88,40 @@ func FindExecutable(executableName string, config Config) (string, bool, error) 
 		}
 		pluginExecutables = append(pluginExecutables, executable)
 		plugins[executable.PluginName] = pluginExecutables
+		pluginNames = append(pluginNames, executable.PluginName)
 	}
 
+	formattedPluginNames := strings.Join(pluginNames, ", ")
+
+	type versionsExecutables struct {
+		versions    []string
+		executables []Executable
+	}
+
+	var versionsWithExecutables []versionsExecutables
 	for plugin, pluginExecutables := range plugins {
 		toolVersions, found, err := FindVersions(plugin, config)
 		if err != nil {
 			return "", false, err
 		}
-		if !found {
-			continue
-		}
+		if found {
+			newEntry := versionsExecutables{toolVersions, pluginExecutables}
+			versionsWithExecutables = append(versionsWithExecutables, newEntry)
 
-		for _, toolVersion := range toolVersions {
+		}
+	}
+	if len(versionsWithExecutables) == 0 {
+		return "", false, fmt.Errorf("no versions set for %s", formattedPluginNames)
+	}
+
+	for _, entry := range versionsWithExecutables {
+		for _, toolVersion := range entry.versions {
 			if toolVersion == "system" {
 				if executablePath, found := FindSystemExecutable(executableName); found {
 					return executablePath, true, nil
 				}
 			}
-			for _, executable := range pluginExecutables {
+			for _, executable := range entry.executables {
 				if toolVersion == executable.PluginVersion {
 					if executablePath, err := GetExecutablePath(executable); err == nil {
 						return executablePath, true, nil
@@ -114,7 +131,7 @@ func FindExecutable(executableName string, config Config) (string, bool, error) 
 		}
 	}
 
-	return "", false, nil
+	return "", false, fmt.Errorf("no %s executable for plugin %s", executableName, formattedPluginNames)
 }
 
 // GetShimPath returns the path of the shim
