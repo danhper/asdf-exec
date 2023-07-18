@@ -5,7 +5,7 @@ build:
 	mkdir -p build
 
 linux: build
-	GOOS=linux GOARCH=amd64 go build -o build/asdf-exec-linux-x64
+	GOOS=linux go build -o build/asdf-exec-linux
 
 macos: build
-	GOOS=darwin GOARCH=amd64 go build -o build/asdf-exec-darwin-x64
+	GOOS=darwin go build -o build/asdf-exec-darwin
